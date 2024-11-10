@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 
 // MySQLデータベースに接続
 const db = mysql.createConnection({
-host: 'localhost',
+host: 'sv14133.xserver.jp',
   user: 'xs557112_2tg5x',
   password: 'rie30l5ub0',  // rootユーザーのパスワード
   database: 'xs557112_ad1cus'
