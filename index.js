@@ -1,35 +1,23 @@
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const cors = require('cors');  // CORS用
+const cors = require('cors');
 
 const app = express();
-const PORT =3001; // ここを変更
 
 // CORS設定
 app.use(cors({
-  origin: 'https://ctn-net.jp', // 許可したいオリジン
-  methods: ['GET', 'POST'], // 許可するHTTPメソッド
-  allowedHeaders: ['Content-Type'], // 許可するヘッダーを指定
+  origin: 'https://ctn-net.jp',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
 }));
-
-// OPTIONSメソッドのリクエストを処理
-app.options('/save-data', (req, res) => {
-  res.header('Access-Control-Allow-Origin', 'https://ctn-net.jp');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.sendStatus(204); // No Content
-});
-
-app.get('/save-data', (req, res) => {
-  res.send('サーバーは正常に動作しています。');
-});
 
 // JSON形式のリクエストを解析するためのミドルウェア
 app.use(bodyParser.json());
 
 // MySQLデータベースに接続
 const db = mysql.createConnection({
-host: 'sv14133.xserver.jp',
+  host: 'sv14133.xserver.jp',
   user: 'xs557112_2tg5x',
   password: 'rie30l5ub0',  // rootユーザーのパスワード
   database: 'xs557112_ad1cus'
@@ -44,12 +32,13 @@ db.connect((err) => {
   }
 });
 
-app.get('/save-data', (req, res) => {
+// ルートパスのハンドラー
+app.get('/api/save-data', (req, res) => {
   res.send('サーバーは正常に動作しています。');
 });
 
-app.post('/save-data', (req, res) => {
-  console.log('POSTリクエストを受け取りました:', req.body); // リクエスト内容をログに出力
+app.post('/api/save-data', (req, res) => {
+  console.log('POSTリクエストを受け取りました:', req.body);
 
   const {
     name = '',
@@ -71,7 +60,6 @@ app.post('/save-data', (req, res) => {
     history = ''
   } = req.body;
 
-  // ユニークキーとしてemailを使用（他の識別子でも可）
   const query = `
     INSERT INTO car_data (name, zipcode, address, email, saved_utm_param, ip, fpc, inflowURL, CarName, carmet, month, Meka, caryear, carversion, color, auto, history)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -95,8 +83,5 @@ app.post('/save-data', (req, res) => {
   });
 });
 
-
-// サーバーの起動
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`サーバーがポート${PORT}で起動しました`);
-});
+// サーバーレス関数としてエクスポート
+module.exports = app;
